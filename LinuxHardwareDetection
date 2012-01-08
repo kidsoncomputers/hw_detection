@@ -10,8 +10,8 @@
 #TODO:  do we note anywhere that this may need to be run with sudo perms?
 #TODO:  align our output with the windows script output
 #TODO:  verify outputs of USB check
-#TODO:  video card & capabilities
 #TODO:  deal with multiple processor output (eg, my thinkpad shows a ton of crap we don't want)
+#TODO:  filter crap out of lspci output
 
 MEMORY=`free -m | grep Mem | awk '{print $2}'`
 
@@ -30,8 +30,9 @@ OS=`uname -r`
 PROC=`uname -p`
 PROC_DETAIL=`cat /proc/cpuinfo`
 HD=`fdisk -l | grep "Disk /"`
-ETHERNET=`lspci | grep -i ethernet`
-WIRELESS=`lspci | grep -i wireless`
+# TODO:  can we count on egrep availability?  Probably not.
+NETWORK=`lspci | egrep -i "ethernet|wireless|network"`
+VIDEO=`lspci | egrep -i "vga|graphics|video"`
 
 #TODO:  put this in a loop
 if ls /dev/cd* 1>/dev/null
@@ -72,8 +73,9 @@ CD: $CD
 DVD: $DVD
 USB: $USB
 
-Ethernet: $ETHERNET
-Wireless: $WIRELESS
+Network: $NETWORK
+
+Video card: $VIDEO
 
 INFO
 
