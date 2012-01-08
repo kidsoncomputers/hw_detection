@@ -7,9 +7,11 @@
 # Tim Burgess 28.11.07
 
 #TODO:  add more robust paths
+#TODO:  do we note anywhere that this may need to be run with sudo perms?
 #TODO:  align our output with the windows script output
 #TODO:  verify outputs of USB check
 #TODO:  video card & capabilities
+#TODO:  deal with multiple processor output (eg, my thinkpad shows a ton of crap we don't want)
 
 MEMORY=`free -m | grep Mem | awk '{print $2}'`
 
