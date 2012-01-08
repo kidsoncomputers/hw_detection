@@ -1,0 +1,80 @@
+#!/bin/bash
+# KOC GHC Open Source Day project 2011
+# by Gabrielle Roth & Michelle Rowley
+
+#based on:
+# System Information Generator v1.1
+# Tim Burgess 28.11.07
+
+#TODO:  add more robust paths
+#TODO:  align our output with the windows script output
+#TODO:  verify outputs of USB check
+#TODO:  video card & capabilities
+
+MEMORY=`free -m | grep Mem | awk '{print $2}'`
+
+if [ ${MEMORY} -le 500 ];
+	then
+		echo "Insufficient Memory for KOC project:  ${MEMORY}M;  exiting."
+		exit
+fi
+
+echo "Generating system stats;  please wait."
+
+DATE=`date`
+SERIAL=`dmidecode -t system | grep -i serial | sed "s/^[ 	]*//"`
+VERSION=`uname -a`
+OS=`uname -r`
+PROC=`uname -p`
+PROC_DETAIL=`cat /proc/cpuinfo`
+HD=`fdisk -l | grep "Disk /"`
+ETHERNET=`lspci | grep -i ethernet`
+WIRELESS=`lspci | grep -i wireless`
+
+#TODO:  put this in a loop
+if ls /dev/cd* 1>/dev/null
+	then CD="Present"
+	else CD="Not present"
+fi
+
+if ls /dev/dvd* 1>/dev/null
+	then DVD="Present"
+	else DVD="Not present"
+fi
+
+if ls /dev/usb* 1>/dev/null
+	then USB="Present"
+	else USB="Not present"
+fi
+
+OFILE=$HOME/sysinfo.txt
+cat /dev/null >${OFILE}
+
+cat > ${OFILE} <<INFO
+System Information - File generated on $DATE
+
+$SERIAL
+
+Version: $VERSION
+
+OS: $OS
+
+Processor: $PROC
+$PROC_DETAIL
+
+HD: $HD
+
+RAM: $MEMORY M
+
+CD: $CD
+DVD: $DVD
+USB: $USB
+
+Ethernet: $ETHERNET
+Wireless: $WIRELESS
+
+INFO
+
+cat ${OFILE}
+echo "Finished!  Your results have been stored in ${OFILE}"
+exit 0
