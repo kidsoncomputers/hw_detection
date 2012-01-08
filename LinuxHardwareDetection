@@ -28,9 +28,9 @@ SERIAL=`dmidecode -t system | grep -i serial | sed "s/^[ 	]*//"`
 VERSION=`uname -a`
 OS=`uname -r`
 PROC=`uname -p`
-PROC_DETAIL=`cat /proc/cpuinfo`
-HD=`fdisk -l | grep "Disk /"`
 # TODO:  can we count on egrep availability?  Probably not.
+PROC_DETAIL=`cat /proc/cpuinfo | egrep -i "processor|vendor_id|model name|mhz"`
+HD=`fdisk -l | grep "Disk /"`
 NETWORK=`lspci | egrep -i "ethernet|wireless|network"`
 VIDEO=`lspci | egrep -i "vga|graphics|video"`
 
