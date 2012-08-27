@@ -6,37 +6,37 @@
 # Tim Burgess 28.11.07
 
 #TODO:  add more robust paths
-#more clarification...
+#Based on my research i think this requires you to install software to create this. I maybe completely wrong.
 #TODO:  do we note anywhere that this may need to be run with sudo perms?
-#Added If statement to check for root user. Some commands will not run without user being root. 
-#TODO:  align our output with the windows script output
-#TODO:  verify outputs of USB check
-#Does the test need to be more specific than just if the cd, dvd, or usb exist?  
+#Added If statement to check for root user. Some commands will not run without user being root.
+#TODO:  align our output with the windows script output In progress
+#TODO:  verify outputs of USB check I think this is completed. I don't think we need to check this fully until we get the units in hand.
+# NOTE: Existing tests check for cd, dvd, and usb. Does not pull hardware specs.
 #TODO:  deal with multiple processor output (eg, my thinkpad shows a ton of crap we don't want)
-#I can't repro this. Can someone else? 
+#I can't repro this. Can someone else?
 #TODO:  filter crap out of lspci output
 
 #Same as above
 
-if [[ $UID != 0 ]]; then echo 'Sorry, must be root.  Exiting...'; exit; fi
+#if [[ $UID != 0 ]]; then echo 'Sorry, must be root.  Exiting...'; exit; fi
 
 MEMORY=`free -m | grep Mem | awk '{print $2}'`
 
 if [ ${MEMORY} -le 500 ];
-	then
-		echo "Insufficient Memory for KOC project:  ${MEMORY}M;  exiting."
-		exit
+        then
+                echo "Insufficient Memory for KOC project:  ${MEMORY}M;  exiting."
+                exit
 fi
 
 echo "Generating system stats;  please wait."
 
 DATE=`date`
-SERIAL=`dmidecode -t system | grep -i serial | sed "s/^[ 	]*//"`
+SERIAL=`dmidecode -t system | grep -i serial | sed "s/^[        ]*//"`
 VERSION=`uname -a`
 OS=`uname -r`
 PROC=`uname -p`
 # TODO:  can we count on egrep availability?  Probably not.
-# egrep is in ubuntu so I would assume this ok. I know other flavors of linux do as well. 
+# egrep is in ubuntu so I would assume this ok. I know other flavors of linux do as well.
 PROC_DETAIL=`cat /proc/cpuinfo | egrep -i "processor|vendor_id|model name|mhz"`
 HD=`fdisk -l | grep "Disk /"`
 NETWORK=`lspci | egrep -i "ethernet|wireless|network"`
@@ -44,18 +44,18 @@ VIDEO=`lspci | egrep -i "vga|graphics|video"`
 
 #TODO:  put this in a loop
 if ls /dev/cd* 1>/dev/null
-	then CD="Present"
-	else CD="Not present"
+        then CD="Present"
+        else CD="Not present"
 fi
 
 if ls /dev/dvd* 1>/dev/null
-	then DVD="Present"
-	else DVD="Not present"
+        then DVD="Present"
+        else DVD="Not present"
 fi
 
 if ls /dev/usb* 1>/dev/null
-	then USB="Present"
-	else USB="Not present"
+        then USB="Present"
+        else USB="Not present"
 fi
 
 OFILE=$HOME/sysinfo.txt
@@ -90,4 +90,5 @@ INFO
 cat ${OFILE}
 echo "Finished!  Your results have been stored in ${OFILE}"
 exit 0
+
 
