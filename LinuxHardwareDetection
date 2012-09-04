@@ -6,7 +6,7 @@
 # Tim Burgess 28.11.07
 
 #Some suggestions on the script you offered:
-#Force execution by /bin/bash.  I ran it in a variety of situations, and it appears that when running in /bin/dash the environment variable $UID does not exist.  This causes a syntax error in the test that does not happen when using /bin/bash.
+#TODO: Force execution by /bin/bash.  I ran it in a variety of situations, and it appears that when running in /bin/dash the environment variable $UID does not exist.  This causes a syntax error in the test that does not happen when using /bin/bash.
 
 #Any suggestions on how to go about this? 
 
@@ -19,7 +19,7 @@
 
 #Completed. I just cat'd another file that would give me the description. Should work on different flavors of Linux. Let me know if it doesn't. 
 
-#Distinguish among the possible optical drive types, particularly a DVD R/W drive vs. a DVD-ROM drive.  I don't have any suggestions how to accomplish this, but it would 3be good information to have.
+#TODO: Distinguish among the possible optical drive types, particularly a DVD R/W drive vs. a DVD-ROM drive.  I don't have any suggestions how to accomplish this, but it would 3be good information to have.
 
 #Off the top of my head I could just use a command and just grep out the descriptions...I'll play with this later in the week. 
 
