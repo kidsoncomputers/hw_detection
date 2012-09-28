@@ -1,91 +1,58 @@
 #!/bin/bash
+# Linux hardware detection script for Kids on Computers 
 
-# GHC Open Source Day project 2011
-# by Gabrielle Roth & Michelle Rowley
-
-#based on:
-# System Information Generator v1.1
-# Tim Burgess 28.11.07
-
-#Some suggestions on the script you offered:
-#TODO: Force execution by /bin/bash.  I ran it in a variety of situations, and it appears that when running in /bin/dash the environment variable $UID does not exist.  This causes a syntax error in the test that does not happen when using /bin/bash.
-
-#Any suggestions on how to go about this? 
-
-#Don't exit simply because memory is inadequate for our use.  Note the value, highlight it somehow, but keep on going to learn the rest of the system's features.
-
-#Completed. I just removed the if logic and had it display the value instead. The value is the first one displayed. 
-
-#Requests:
-#Create a table to cross reference the release number returned by 'uname -r'  with terms we use daily like Edubuntu 12.04 or Edubuntu 10.04.  Please print the latter rather than the raw 'uname -r' output.  I could probably learn and adapt to the current set of values, but I'm lazy.
-
-#Completed. I just cat'd another file that would give me the description. Should work on different flavors of Linux. Let me know if it doesn't. 
-
-#TODO: Distinguish among the possible optical drive types, particularly a DVD R/W drive vs. a DVD-ROM drive.  I don't have any suggestions how to accomplish this, but it would 3be good information to have.
-
-#Off the top of my head I could just use a command and just grep out the descriptions...I'll play with this later in the week. 
-
-#if [[ $UID != 0 ]]; then echo 'Sorry, must be root. Exiting...'; exit; fi
-
-echo "Generating system stats; please wait."
-MEMORY=`free -m | grep Mem | awk '{print $2}'`
-DATE=`date`
-SERIAL=`dmidecode -t system | grep -i serial | sed "s/^[         ]*//"`
-VERSION=`cat  /etc/*-release | grep -i DISTRIB_DESCRIPTION | sed -e "s/^.*\"\(.*\)\".*$/\"\1\"/" `
-PROC=`uname -p`
-# TODO: can we count on egrep availability? Probably not.
-# egrep is in ubuntu so I would assume this ok. I know other flavors of linux do as well.
-PROC_DETAIL=`cat /proc/cpuinfo | egrep -i "processor|vendor_id|model name|mhz"`
-HD=`fdisk -l | grep "Disk /"`
-NETWORK=`lspci | egrep -i "ethernet|wireless|network"`
-VIDEO=`lspci | egrep -i "vga|graphics|video"`
-
-#TODO: put this in a loop
-if ls /dev/cd* 1>/dev/null
-        then CD="Present"
-        else CD="Not present"
+#Check for superuser to ensure proper output of all commands
+if [[ $EUID -ne 0 ]]; then
+        echo "Permission denied (are you root?)."
+	exit 1
 fi
 
-if ls /dev/dvd* 1>/dev/null
-        then DVD="Present"
-        else DVD="Not present"
-fi
+#######GLOBALVARS#######
+export log=/tmp/linux-check.log
 
-if ls /dev/usb* 1>/dev/null
-        then USB="Present"
-        else USB="Not present"
-fi
+########################
+date >> $log
+echo -e "\nSystem Report\n------------------" >> $log
 
-OFILE=$HOME/sysinfo.txt
-cat /dev/null >${OFILE}
+#######FUNCTIONS#######
+checkRAM(){
+	RAM=$(free -m | awk '/^Mem:/{print $2}')
+	if [[ $RAM -le 500 ]]; then
+		echo -e "This machine does not meet the memory requirements of KOC.\nRAM: ${RAM}M [FAIL]\n"
+	else
+		echo -e "RAM ${RAM}M [PASS]\n"
+	fi				
+}
 
-cat > ${OFILE} <<INFO
-System Information - File generated on $DATE
-Memory: $MEMORY MB
+getHardInfo(){
+	echo -e "Hardware Information\n-------------------"
+	serial=$(dmidecode -t system | awk '/Serial/') #BIOS serial
+	processor=$(awk '/processor|vendor_id|model name|mhz/' /proc/cpuinfo)
+	opticals=$(wodim --devices | awk '/dev/{print $5 " " $6}')	
+	drives=$(fdisk -l | awk '/Disk \//')
+	#Use regex instead of IGNORECASE=1 which is for newer versions of awk
+	network=$(lspci | cut -f2- -d ' ' | awk '/[Ee]thernet|[Ww]ireless|[Nn]etwork/')
+	graphics=$(lspci | cut -f2- -d ' ' | awk '/[Vv]ideo|[Vv]ga|[Gg]raphics/')
+	audio=$(lspci | cut -f2- -d ' ' | awk '/[Aa]udio/'
+)
+	echo -e "${serial}\n\nCPU:\n${processor}\n\n${drives}\nOptical drives: ${opticals}\n\n${network}\n${graphics}\n${audio}\n"
+	
+}
 
-$SERIAL
+getSoftInfo(){
+	echo -e "Software Information\n-------------------"
+	os=$(uname -a | awk '{print $1 " " $2}')
+	kernel=$(uname -r)	
+	echo -e "OS: ${os}\nKernel version: ${kernel}\n"
+}
 
-Version: $VERSION
+#######EXECUTION#######
 
-Processor: $PROC
-$PROC_DETAIL
-
-HD: $HD
-
-RAM: $MEMORY M
-
-CD: $CD
-DVD: $DVD
-USB: $USB
-
-Network: $NETWORK
-
-Video card: $VIDEO
-
-INFO
-
-cat ${OFILE}
-echo "Finished! Your results have been stored in ${OFILE}"
-exit 0
-
-
+echo -e "\nGenerating system report..."
+checkRAM >> $log 2>&1
+echo "Checking avalible hardware devices..."
+getHardInfo >> $log 2>&1
+echo "Checking software configuration..."
+getSoftInfo >> $log 2>&1
+echo -e "All Finished! Check ${log} for details.\n"
+cat $log 
