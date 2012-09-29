@@ -1,6 +1,5 @@
-'Windows System Information Generator Script by Charles G.
 
-
+Dim objWMIService, objItem, colItems, strComputer
 'Create file to dump output from WMI retrival. 
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 Set objFile = objFSO.CreateTextFile("sysinfo.txt", True)
@@ -40,6 +39,16 @@ if (objComputer.TotalPhysicalMemory / 2^20 > 500) Then
 End If
 objFile.WriteLine""
 Next
+
+Set colItems = objWMIService.ExecQuery _
+("Select * from Win32_LogicalDisk")
+objFile.WriteLine "Description: " & objItem.Description 
+objFile.WriteLine "Volume Name: " & objItem.VolumeName 
+objFile.WriteLine "Drive Type: " & objItem.DriveType 
+objFile.WriteLine "Media Type: " & objItem.MediaType 
+objFile.WriteLine "VolumeSerialNumber: " & objItem.VolumeSerialNumber 
+objFile.WriteLine "Size: " & Int(objItem.Size /1073741824) & " GB" 
+objFile.WriteLine "Free Space: " & Int(objItem.FreeSpace /1073741824) & " GB"  
 
 'Pulls information about the computer System itself
 Set colSettings = objWMIService.ExecQuery _
@@ -108,4 +117,3 @@ For Each objItem in colItems
 Next
 
 MsgBox "Generated System Information. Please review the file sysinfo.txt on the Desktop.", 1, "System Info Generator"
-
