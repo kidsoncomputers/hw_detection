@@ -2,7 +2,8 @@
 'just revisit this one to see if I can make it better. Its just a matter of comparing the WMI commands. 
 'TODO. I need to make sure this writes out to a file and that it automatically executes. Otherwise we should be good to
 'go when I finish making sure the output is where it should be. Anyone with vbscript knowledge is welcome to provide feedback. 
- 
+'I'm also a little concerned about people just downloading scripts. These scripts may be treated as viruses by many AV software
+'programs. 
 
 'Global Variables
 Dim objWMIService, objItem, colItems, strComputer
