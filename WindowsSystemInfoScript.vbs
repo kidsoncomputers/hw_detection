@@ -1,3 +1,9 @@
+'Wrote two scripts. This is the first one I wrote. Seemed like the PS one gave me better output so I may
+'just revisit this one to see if I can make it better. Its just a matter of comparing the WMI commands. 
+'TODO. I need to make sure this writes out to a file and that it automatically executes. Otherwise we should be good to
+'go when I finish making sure the output is where it should be. Anyone with vbscript knowledge is welcome to provide feedback. 
+ 
+
 'Global Variables
 Dim objWMIService, objItem, colItems, strComputer
 
